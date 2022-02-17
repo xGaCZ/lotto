@@ -28,7 +28,7 @@ do
             }
             Console.WriteLine("2 - Sprawdź kupon");
             Console.WriteLine("3 - Zakoncz grę");
-
+           
             wybor = Console.ReadKey().Key;
             if(wybor == ConsoleKey.D1 && saldo >=2 && los < 8)
             {
@@ -36,7 +36,6 @@ do
                 saldo -= 2;
                 los++;
             }
-
 
         } while (wybor == ConsoleKey.D1);
         Console.Clear();
@@ -75,7 +74,101 @@ do
 
 int sprawdz(List<int[]> kupon)
 {
-    throw new NotImplementedException();
+    int wygrana = 0;
+    int[] LiczbyLotka =new int[6];
+    for (int i = 0; i < LiczbyLotka.Length; i++)
+    {
+        int los = generator.Next(1, 50);
+        if (!LiczbyLotka.Contains(los))
+        {
+            LiczbyLotka[i] = los;
+        }
+        else
+        {
+            i--;
+        }
+
+    }
+    Array.Sort(LiczbyLotka);
+    Console.WriteLine("Wylosowane liczby to: ");
+    foreach (int liczba in LiczbyLotka)
+    {
+        Console.Write(liczba + ", ");
+    }
+    int[] trafione = SprawdzKupon(kupon, LiczbyLotka);
+
+    int wartosc = 0;
+    Console.WriteLine();
+    if(trafione[0] >0)
+    {
+        wartosc = trafione[0] * 24;
+        Console.WriteLine("3 Trafienia: {0} +{1}zł",trafione[0],wartosc);
+        wygrana += wartosc;
+    }
+    if (trafione[1] > 0)
+    {
+        wartosc = trafione[1] * generator.Next(100,300);
+        Console.WriteLine("3 Trafienia: {0} +{1}zł", trafione[1], wartosc);
+        wygrana += wartosc;
+    }
+    if (trafione[2] > 0)
+    {
+        wartosc = trafione[2] * generator.Next(4000,8001);
+        Console.WriteLine("3 Trafienia: {0} +{1}zł", trafione[2], wartosc);
+        wygrana += wartosc;
+    }
+    if (trafione[3] > 0)
+    {
+        wartosc = (trafione[3] * kumulacja)/ (trafione[3] + generator.Next(0,5));
+        Console.WriteLine("3 Trafienia: {0} +{1}zł", trafione[3], wartosc);
+        wygrana += wartosc;
+    }
+
+    return wygrana;
+}
+
+int[] SprawdzKupon(List<int[]> kupon, int[] liczbyLotka)
+{
+    int[] wygrane = new int[4];
+    int i = 0;
+    Console.WriteLine("\n\n Twój kupon");
+    foreach(int[] los in kupon)
+    {
+        i++;
+        Console.WriteLine(i + ", ");
+        int trafien = 0;
+        foreach(int liczba in los) 
+        {
+            if(liczbyLotka.Contains(liczba))
+            {
+                Console.ForegroundColor= ConsoleColor.Green;
+                Console.Write(liczba + ", ");
+                Console.ResetColor();
+                trafien++;
+            }
+            else
+            {
+                Console.Write(liczba + ", ");
+            }
+        }
+        switch (trafien)
+        {
+            case 3:
+                wygrane[0]++;
+            break;
+            case 4:
+                wygrane[1]++;
+            break;
+            case 5:
+                wygrane[2]++;
+            break;
+            case 6:
+                wygrane[3]++;
+            break;
+        }
+        Console.WriteLine(" - Trafiono {0}/6",trafien);
+    }
+    return wygrane;
 }
 
 int[] PostawLos()
@@ -126,7 +219,7 @@ void Wkupin(List<int[]> kupon)
         foreach (int[] losy in kupon)
         {
             i++;
-            Console.WriteLine(i + ": ");
+            Console.Write(i + ": ");
             foreach (int liczba in losy)
             {
                 Console.Write(liczba + ", ");
